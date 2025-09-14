@@ -1,6 +1,3 @@
-// Memuat produk dari localStorage saat halaman dimuat
-document.addEventListener('DOMContentLoaded', loadProducts);
-
 // Variabel global untuk menyimpan data produk
 let products = [];
 
@@ -26,12 +23,14 @@ function addProduct() {
     products.push(newProduct);
     
     saveProducts(products);
-    drawProducts(); 
     
+    // Bersihkan input
     nameInput.value = '';
     stockInput.value = '';
     descInput.value = '';
     imageInput.value = '';
+    
+    alert('Produk berhasil ditambahkan!');
 }
 
 // Fungsi untuk menghapus produk
@@ -58,10 +57,13 @@ function createWhatsAppLink(productName) {
 
 // Fungsi untuk menampilkan halaman detail produk
 function showProductDetail(index) {
+    products = getProducts();
     const product = products[index];
 
-    document.getElementById('product-management').style.display = 'none';
-    document.getElementById('product-detail').style.display = 'block';
+    if (!product) {
+        alert('Produk tidak ditemukan!');
+        return;
+    }
 
     document.getElementById('detail-image').src = product.image;
     document.getElementById('detail-name').innerText = product.name;
@@ -72,15 +74,11 @@ function showProductDetail(index) {
     orderBtn.href = createWhatsAppLink(product.name);
 }
 
-// Fungsi untuk kembali ke halaman daftar produk
-function backToList() {
-    document.getElementById('product-management').style.display = 'block';
-    document.getElementById('product-detail').style.display = 'none';
-}
-
-// Fungsi untuk menggambar produk di canvas
+// Fungsi untuk menggambar produk di canvas (hanya di halaman katalog)
 function drawProducts() {
     const canvas = document.getElementById('product-canvas');
+    if (!canvas) return; // Keluar jika elemen canvas tidak ada di halaman ini
+
     const ctx = canvas.getContext('2d');
     products = getProducts();
 
@@ -91,7 +89,7 @@ function drawProducts() {
     const padding = 20;
     const cols = Math.floor(canvas.width / (cardWidth + padding));
     const rows = Math.ceil(products.length / cols);
-    canvas.height = rows * (cardHeight + padding);
+    canvas.height = rows * (cardHeight + padding) + padding;
 
     products.forEach((product, index) => {
         const col = index % cols;
@@ -99,16 +97,39 @@ function drawProducts() {
         const x = col * (cardWidth + padding);
         const y = row * (cardHeight + padding);
         
-        // Simpan posisi dan ukuran setiap kartu untuk pendeteksian klik
         product.x = x;
         product.y = y;
         product.width = cardWidth;
         product.height = cardHeight;
+        
+        product.deleteBtn = { x: x + cardWidth - 40, y: y + 10, size: 30 };
+        product.editBtn = { x: x + cardWidth - 80, y: y + 10, size: 30 };
 
         ctx.fillStyle = '#f9f9f9';
         ctx.fillRect(x, y, cardWidth, cardHeight);
         ctx.strokeStyle = '#ccc';
         ctx.strokeRect(x, y, cardWidth, cardHeight);
+
+        ctx.beginPath();
+        ctx.arc(product.deleteBtn.x + product.deleteBtn.size / 2, product.deleteBtn.y + product.deleteBtn.size / 2, product.deleteBtn.size / 2, 0, Math.PI * 2);
+        ctx.fillStyle = '#dc3545';
+        ctx.fill();
+        ctx.closePath();
+
+        ctx.fillStyle = 'white';
+        ctx.font = '20px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('X', product.deleteBtn.x + product.deleteBtn.size / 2, product.deleteBtn.y + product.deleteBtn.size / 2 + 7);
+        
+        ctx.beginPath();
+        ctx.arc(product.editBtn.x + product.editBtn.size / 2, product.editBtn.y + product.editBtn.size / 2, product.editBtn.size / 2, 0, Math.PI * 2);
+        ctx.fillStyle = '#ffc107';
+        ctx.fill();
+        ctx.closePath();
+
+        ctx.fillStyle = 'white';
+        ctx.font = '16px Arial';
+        ctx.fillText('✎', product.editBtn.x + product.editBtn.size / 2, product.editBtn.y + product.editBtn.size / 2 + 5);
 
         const img = new Image();
         img.onload = () => {
@@ -138,27 +159,41 @@ function saveProducts(products) {
     localStorage.setItem('products', JSON.stringify(products));
 }
 
-// Fungsi untuk memuat produk saat halaman pertama kali dibuka
-function loadProducts() {
-    products = getProducts();
-    drawProducts();
-}
-
-// Tambahkan event listener untuk mendeteksi klik pada canvas
-document.getElementById('product-canvas').addEventListener('click', (event) => {
+// Event listener untuk mendeteksi klik pada canvas (hanya di halaman katalog)
+document.addEventListener('DOMContentLoaded', () => {
     const canvas = document.getElementById('product-canvas');
-    const rect = canvas.getBoundingClientRect();
-    const scaleX = canvas.width / rect.width;
-    const scaleY = canvas.height / rect.height;
+    if (!canvas) return; // Keluar jika elemen canvas tidak ada di halaman ini
 
-    const mouseX = (event.clientX - rect.left) * scaleX;
-    const mouseY = (event.clientY - rect.top) * scaleY;
+    canvas.addEventListener('click', (event) => {
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
 
-    // Periksa produk mana yang diklik berdasarkan koordinat
-    products.forEach((product, index) => {
-        if (mouseX >= product.x && mouseX <= product.x + product.width &&
-            mouseY >= product.y && mouseY <= product.y + product.height) {
-            showProductDetail(index);
-        }
+        const mouseX = (event.clientX - rect.left) * scaleX;
+        const mouseY = (event.clientY - rect.top) * scaleY;
+
+        products.forEach((product, index) => {
+            // Periksa apakah klik berada di tombol edit
+            if (mouseX >= product.editBtn.x && mouseX <= product.editBtn.x + product.editBtn.size &&
+                mouseY >= product.editBtn.y && mouseY <= product.editBtn.y + product.editBtn.size) {
+                // Navigasi ke halaman input.html dengan parameter indeks
+                window.location.href = `input.html?editIndex=${index}`;
+                return;
+            }
+
+            // Periksa apakah klik berada di tombol hapus
+            if (mouseX >= product.deleteBtn.x && mouseX <= product.deleteBtn.x + product.deleteBtn.size &&
+                mouseY >= product.deleteBtn.y && mouseY <= product.deleteBtn.y + product.deleteBtn.size) {
+                deleteProduct(index);
+                return;
+            }
+            
+            // Jika tidak, periksa apakah klik berada di kartu produk
+            if (mouseX >= product.x && mouseX <= product.x + product.width &&
+                mouseY >= product.y && mouseY <= product.y + product.height) {
+                // Navigasi ke halaman deskripsi.html dengan parameter indeks
+                window.location.href = `deskripsi.html?index=${index}`;
+            }
+        });
     });
 });

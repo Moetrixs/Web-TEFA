@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detail Produk</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f0f2f5; margin: 0; padding: 0; text-align: center; }
+        .container { max-width: 700px; margin: 20px auto; padding: 20px; background-color: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        h1, h2 { color: #004d99; }
+        #detail-image { max-width: 100%; height: auto; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        #detail-name { font-size: 2em; margin-bottom: 10px; color: #004d99; }
+        #detail-description { line-height: 1.6; text-align: justify; max-width: 600px; margin: 0 auto 20px; }
+        #detail-stock { font-size: 1.2em; color: #555; }
+        .back-btn, .order-btn { background-color: #6c757d; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; margin-top: 20px; text-decoration: none; display: inline-block; }
+        .order-btn { background-color: #25d366; margin-left: 10px; }
+        .back-btn:hover { background-color: #5a6268; }
+        .order-btn:hover { background-color: #128c7e; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 id="detail-name"></h2>
+        <img src="" alt="Foto Produk" id="detail-image">
+        <p id="detail-stock"></p>
+        <p id="detail-description"></p>
+        <a href="#" id="order-btn" class="order-btn" target="_blank">Pesan Sekarang (via WhatsApp)</a>
+        <a href="katalog.html" class="back-btn">Kembali ke Katalog</a>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        // Logika spesifik untuk halaman deskripsi
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const index = urlParams.get('index');
+            if (index !== null) {
+                showProductDetail(parseInt(index));
+            }
+        });
+    </script>
+</body>
+</html>
