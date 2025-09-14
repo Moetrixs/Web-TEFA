@@ -43,7 +43,6 @@ function addProduct() {
     
     saveProducts(products);
     
-    // Bersihkan input setelah menambahkan produk
     nameInput.value = '';
     stockInput.value = '';
     priceInput.value = '';
@@ -227,19 +226,24 @@ document.addEventListener('DOMContentLoaded', () => {
         const mouseX = (event.clientX - rect.left) * scaleX;
         const mouseY = (event.clientY - rect.top) * scaleY;
 
+        const products = getProducts(); // Muat ulang data produk di sini
+        
         products.forEach((product, index) => {
-            if (mouseX >= product.editBtn.x && mouseX <= product.editBtn.x + product.editBtn.size &&
-                mouseY >= product.editBtn.y && mouseY <= product.editBtn.y + product.editBtn.size) {
-                window.location.href = `input.html?editIndex=${index}`;
-                return;
-            }
-
+            // Logika untuk mendeteksi klik pada tombol hapus
             if (mouseX >= product.deleteBtn.x && mouseX <= product.deleteBtn.x + product.deleteBtn.size &&
                 mouseY >= product.deleteBtn.y && mouseY <= product.deleteBtn.y + product.deleteBtn.size) {
                 deleteProduct(index);
                 return;
             }
+
+            // Logika untuk mendeteksi klik pada tombol edit
+            if (mouseX >= product.editBtn.x && mouseX <= product.editBtn.x + product.editBtn.size &&
+                mouseY >= product.editBtn.y && mouseY <= product.editBtn.y + product.editBtn.size) {
+                window.location.href = `input.html?editIndex=${index}`;
+                return;
+            }
             
+            // Logika untuk mendeteksi klik pada kartu produk
             if (mouseX >= product.x && mouseX <= product.x + product.width &&
                 mouseY >= product.y && mouseY <= product.y + product.height) {
                 window.location.href = `deskripsi.html?index=${index}`;
