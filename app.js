@@ -49,10 +49,54 @@ function deleteProduct(index) {
     drawProducts();
 }
 
+// Fungsi untuk menampilkan formulir edit produk
+function showEditForm(index) {
+    products = getProducts();
+    const product = products[index];
+
+    document.getElementById('add-form').style.display = 'none';
+    document.getElementById('edit-form').style.display = 'block';
+
+    document.getElementById('edit-product-title').innerText = `Edit Produk: ${product.name}`;
+    document.getElementById('edit-name').value = product.name;
+    document.getElementById('edit-stock').value = product.stock;
+    document.getElementById('edit-price').value = product.price;
+    document.getElementById('edit-image').value = product.image;
+    document.getElementById('edit-description').value = product.description;
+    document.getElementById('edit-save-btn').dataset.index = index;
+}
+
+// Fungsi untuk menyimpan perubahan dari formulir edit
+function saveEditedProduct() {
+    const index = document.getElementById('edit-save-btn').dataset.index;
+    const product = products[index];
+
+    const newName = document.getElementById('edit-name').value.trim();
+    const newStock = parseInt(document.getElementById('edit-stock').value);
+    const newPrice = parseInt(document.getElementById('edit-price').value);
+    const newImage = document.getElementById('edit-image').value.trim();
+    const newDesc = document.getElementById('edit-description').value.trim();
+    
+    if (newName === '' || isNaN(newStock) || newStock < 0 || isNaN(newPrice) || newPrice < 0 || newImage === '' || newDesc === '') {
+        alert('Mohon isi semua data dengan valid.');
+        return;
+    }
+
+    product.name = newName;
+    product.stock = newStock;
+    product.price = newPrice;
+    product.image = newImage;
+    product.description = newDesc;
+
+    saveProducts(products);
+    alert('Perubahan berhasil disimpan!');
+    window.location.href = 'katalog.html';
+}
+
 // Fungsi untuk membuat tautan WhatsApp
-function createWhatsAppLink(productName) {
+function createWhatsAppLink(productName, productPrice) {
     const phoneNumber = '6285263675857'; 
-    const message = `Halo, saya tertarik dengan produk *${productName}* yang ada di Galeri Produk TEFA SMK Negeri 7 Pekanbaru. Apakah produk ini masih tersedia?`;
+    const message = `Halo, saya tertarik dengan produk *${productName}* dengan harga Rp. ${productPrice} di Galeri Produk TEFA SMK Negeri 7 Pekanbaru. Apakah produk ini masih tersedia?`;
     
     const encodedMessage = encodeURIComponent(message);
     return `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
@@ -72,9 +116,10 @@ function showProductDetail(index) {
     document.getElementById('detail-name').innerText = product.name;
     document.getElementById('detail-stock').innerText = `Stok: ${product.stock}`;
     document.getElementById('detail-description').innerText = product.description;
+    document.getElementById('detail-price').innerText = `Harga: Rp. ${product.price}`;
 
     const orderBtn = document.getElementById('order-btn');
-    orderBtn.href = createWhatsAppLink(product.name);
+    orderBtn.href = createWhatsAppLink(product.name, product.price);
 }
 
 // Fungsi untuk menggambar produk di canvas (hanya di halaman katalog)
