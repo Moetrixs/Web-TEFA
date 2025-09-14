@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplikasi Inventaris Produk TEFA</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 10px auto;
+            padding: 10px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        h1, h2 {
+            color: #004d99;
+            text-align: center;
+        }
+
+        .form-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+
+        .form-section input, .form-section textarea, .form-section button {
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            width: 100%;
+        }
+        
+        .form-section button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .form-section button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Gaya untuk kanvas */
+        #product-canvas {
+            border: 1px solid #ccc;
+            background-color: white;
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* Gaya untuk Halaman Detail Produk (Mobile) */
+        #product-detail {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        #detail-image {
+            max-width: 100%;
+            height: auto;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        #detail-name {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+            color: #004d99;
+        }
+
+        #detail-description {
+            line-height: 1.6;
+            text-align: justify;
+            max-width: 600px;
+            margin: 0 auto 20px;
+        }
+
+        #detail-stock {
+            font-size: 1.1em;
+            color: #555;
+        }
+
+        .back-btn, .order-btn {
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+            text-decoration: none;
+            display: inline-block;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .order-btn {
+            background-color: #25d366;
+            margin-left: 0;
+        }
+        
+        /* Media Queries untuk Layar Tablet & Desktop */
+        @media screen and (min-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            .form-section input, .form-section textarea {
+                width: calc(50% - 10px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="product-management">
+            <h1>Katalog Produk TEFA</h1>
+            
+            <div class="form-section">
+                <h2>Tambah Produk Baru</h2>
+                <input type="text" id="product-name" placeholder="Nama Produk">
+                <input type="number" id="product-stock" placeholder="Stok" min="0">
+                <input type="text" id="product-image" placeholder="URL Foto Produk">
+                <textarea id="product-description" placeholder="Deskripsi produk"></textarea>
+                <button onclick="addProduct()">Tambah Produk</button>
+            </div>
+            
+            <div class="list-section">
+                <h2>Galeri Produk TEFA</h2>
+                <canvas id="product-canvas" width="860" height="auto"></canvas>
+            </div>
+        </div>
+        
+        <div id="product-detail">
+            <img src="" alt="Foto Produk" id="detail-image">
+            <h2 id="detail-name"></h2>
+            <p id="detail-stock"></p>
+            <p id="detail-description"></p>
+            <a href="#" id="order-btn" class="order-btn" target="_blank">Pesan Sekarang (via WhatsApp)</a>
+            <button class="back-btn" onclick="backToList()">Kembali ke Daftar Produk</button>
+        </div>
+    </div>
+    
+    <script src="app.js"></script>
+</body>
+</html>

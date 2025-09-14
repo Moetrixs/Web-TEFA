@@ -1,0 +1,164 @@
+// Memuat produk dari localStorage saat halaman dimuat
+document.addEventListener('DOMContentLoaded', loadProducts);
+
+// Variabel global untuk menyimpan data produk
+let products = [];
+
+// Fungsi untuk menambahkan produk baru
+function addProduct() {
+    const nameInput = document.getElementById('product-name');
+    const stockInput = document.getElementById('product-stock');
+    const descInput = document.getElementById('product-description');
+    const imageInput = document.getElementById('product-image');
+    
+    const name = nameInput.value.trim();
+    const stock = parseInt(stockInput.value);
+    const description = descInput.value.trim();
+    const image = imageInput.value.trim();
+
+    if (name === '' || isNaN(stock) || stock < 0 || description === '' || image === '') {
+        alert('Mohon masukkan semua data produk dengan valid, termasuk URL gambar.');
+        return;
+    }
+    
+    products = getProducts();
+    const newProduct = { name, stock, description, image };
+    products.push(newProduct);
+    
+    saveProducts(products);
+    drawProducts(); 
+    
+    nameInput.value = '';
+    stockInput.value = '';
+    descInput.value = '';
+    imageInput.value = '';
+}
+
+// Fungsi untuk menghapus produk
+function deleteProduct(index) {
+    if (!confirm('Apakah Anda yakin ingin menghapus produk ini?')) {
+        return;
+    }
+    
+    products = getProducts();
+    products.splice(index, 1);
+    
+    saveProducts(products);
+    drawProducts();
+}
+
+// Fungsi untuk membuat tautan WhatsApp
+function createWhatsAppLink(productName) {
+    const phoneNumber = '6285263675857'; 
+    const message = `Halo, saya tertarik dengan produk *${productName}* yang ada di Galeri Produk TEFA SMK Negeri 7 Pekanbaru. Apakah produk ini masih tersedia?`;
+    
+    const encodedMessage = encodeURIComponent(message);
+    return `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+}
+
+// Fungsi untuk menampilkan halaman detail produk
+function showProductDetail(index) {
+    const product = products[index];
+
+    document.getElementById('product-management').style.display = 'none';
+    document.getElementById('product-detail').style.display = 'block';
+
+    document.getElementById('detail-image').src = product.image;
+    document.getElementById('detail-name').innerText = product.name;
+    document.getElementById('detail-stock').innerText = `Stok: ${product.stock}`;
+    document.getElementById('detail-description').innerText = product.description;
+
+    const orderBtn = document.getElementById('order-btn');
+    orderBtn.href = createWhatsAppLink(product.name);
+}
+
+// Fungsi untuk kembali ke halaman daftar produk
+function backToList() {
+    document.getElementById('product-management').style.display = 'block';
+    document.getElementById('product-detail').style.display = 'none';
+}
+
+// Fungsi untuk menggambar produk di canvas
+function drawProducts() {
+    const canvas = document.getElementById('product-canvas');
+    const ctx = canvas.getContext('2d');
+    products = getProducts();
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    const cardWidth = 300;
+    const cardHeight = 350;
+    const padding = 20;
+    const cols = Math.floor(canvas.width / (cardWidth + padding));
+    const rows = Math.ceil(products.length / cols);
+    canvas.height = rows * (cardHeight + padding);
+
+    products.forEach((product, index) => {
+        const col = index % cols;
+        const row = Math.floor(index / cols);
+        const x = col * (cardWidth + padding);
+        const y = row * (cardHeight + padding);
+        
+        // Simpan posisi dan ukuran setiap kartu untuk pendeteksian klik
+        product.x = x;
+        product.y = y;
+        product.width = cardWidth;
+        product.height = cardHeight;
+
+        ctx.fillStyle = '#f9f9f9';
+        ctx.fillRect(x, y, cardWidth, cardHeight);
+        ctx.strokeStyle = '#ccc';
+        ctx.strokeRect(x, y, cardWidth, cardHeight);
+
+        const img = new Image();
+        img.onload = () => {
+            ctx.drawImage(img, x, y, cardWidth, 200);
+            
+            ctx.fillStyle = '#000';
+            ctx.font = '20px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(product.name, x + cardWidth / 2, y + 220);
+            
+            ctx.font = '16px Arial';
+            ctx.fillStyle = '#555';
+            ctx.fillText(`Stok: ${product.stock}`, x + cardWidth / 2, y + 245);
+        };
+        img.src = product.image;
+    });
+}
+
+// Fungsi untuk mengambil data produk dari localStorage
+function getProducts() {
+    const productsJSON = localStorage.getItem('products');
+    return productsJSON ? JSON.parse(productsJSON) : [];
+}
+
+// Fungsi untuk menyimpan data produk ke localStorage
+function saveProducts(products) {
+    localStorage.setItem('products', JSON.stringify(products));
+}
+
+// Fungsi untuk memuat produk saat halaman pertama kali dibuka
+function loadProducts() {
+    products = getProducts();
+    drawProducts();
+}
+
+// Tambahkan event listener untuk mendeteksi klik pada canvas
+document.getElementById('product-canvas').addEventListener('click', (event) => {
+    const canvas = document.getElementById('product-canvas');
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+
+    const mouseX = (event.clientX - rect.left) * scaleX;
+    const mouseY = (event.clientY - rect.top) * scaleY;
+
+    // Periksa produk mana yang diklik berdasarkan koordinat
+    products.forEach((product, index) => {
+        if (mouseX >= product.x && mouseX <= product.x + product.width &&
+            mouseY >= product.y && mouseY <= product.y + product.height) {
+            showProductDetail(index);
+        }
+    });
+});
