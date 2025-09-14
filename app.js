@@ -1,6 +1,23 @@
 // Variabel global untuk menyimpan data produk
 let products = [];
 
+// Fungsi untuk mengambil data produk dari localStorage
+function getProducts() {
+    const productsJSON = localStorage.getItem('products');
+    return productsJSON ? JSON.parse(productsJSON) : [];
+}
+
+// Fungsi untuk menyimpan data produk ke localStorage
+function saveProducts(products) {
+    localStorage.setItem('products', JSON.stringify(products));
+}
+
+// Fungsi untuk memuat produk dari localStorage dan menampilkannya di canvas
+function loadProducts() {
+    products = getProducts();
+    drawProducts();
+}
+
 // Fungsi untuk menambahkan produk baru
 function addProduct() {
     const nameInput = document.getElementById('product-name');
@@ -26,7 +43,7 @@ function addProduct() {
     
     saveProducts(products);
     
-    // Bersihkan input
+    // Bersihkan input setelah menambahkan produk
     nameInput.value = '';
     stockInput.value = '';
     priceInput.value = '';
@@ -69,6 +86,7 @@ function showEditForm(index) {
 // Fungsi untuk menyimpan perubahan dari formulir edit
 function saveEditedProduct() {
     const index = document.getElementById('edit-save-btn').dataset.index;
+    const products = getProducts();
     const product = products[index];
 
     const newName = document.getElementById('edit-name').value.trim();
@@ -90,7 +108,7 @@ function saveEditedProduct() {
 
     saveProducts(products);
     alert('Perubahan berhasil disimpan!');
-    window.location.href = 'katalog.html';
+    window.location.href = 'index.html';
 }
 
 // Fungsi untuk membuat tautan WhatsApp
@@ -104,7 +122,7 @@ function createWhatsAppLink(productName, productPrice) {
 
 // Fungsi untuk menampilkan halaman detail produk
 function showProductDetail(index) {
-    products = getProducts();
+    const products = getProducts();
     const product = products[index];
 
     if (!product) {
@@ -122,13 +140,13 @@ function showProductDetail(index) {
     orderBtn.href = createWhatsAppLink(product.name, product.price);
 }
 
-// Fungsi untuk menggambar produk di canvas (hanya di halaman katalog)
+// Fungsi untuk menggambar produk di canvas (hanya di halaman index.html)
 function drawProducts() {
     const canvas = document.getElementById('product-canvas');
     if (!canvas) return;
 
     const ctx = canvas.getContext('2d');
-    products = getProducts();
+    const products = getProducts();
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -196,18 +214,7 @@ function drawProducts() {
     });
 }
 
-// Fungsi untuk mengambil data produk dari localStorage
-function getProducts() {
-    const productsJSON = localStorage.getItem('products');
-    return productsJSON ? JSON.parse(productsJSON) : [];
-}
-
-// Fungsi untuk menyimpan data produk ke localStorage
-function saveProducts(products) {
-    localStorage.setItem('products', JSON.stringify(products));
-}
-
-// Event listener untuk mendeteksi klik pada canvas (hanya di halaman katalog)
+// Event listener untuk mendeteksi klik pada canvas (hanya di halaman index.html)
 document.addEventListener('DOMContentLoaded', () => {
     const canvas = document.getElementById('product-canvas');
     if (!canvas) return;
