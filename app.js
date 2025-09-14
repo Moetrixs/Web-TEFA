@@ -243,8 +243,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
             
-            // Logika untuk mendeteksi klik pada kartu produk
-            // Perbaikan utama: Tambahkan logika klik untuk gambar
+            // Logika untuk mendeteksi klik pada seluruh area kartu produk
             if (mouseX >= product.x && mouseX <= product.x + product.width &&
                 mouseY >= product.y && mouseY <= product.y + product.height) {
                 window.location.href = `deskripsi.html?index=${index}`;
