@@ -14,13 +14,12 @@
         .form-section button:hover { background-color: #0056b3; }
         .back-btn { background-color: #6c757d; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; margin-top: 20px; text-decoration: none; display: inline-block; }
         .back-btn:hover { background-color: #5a6268; }
+        #edit-form { display: none; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Manajemen Produk TEFA</h1>
-        
-        <div class="form-section">
+        <div id="add-form" class="form-section">
             <h2>Tambah Produk Baru</h2>
             <input type="text" id="product-name" placeholder="Nama Produk">
             <input type="number" id="product-stock" placeholder="Stok" min="0">
@@ -29,14 +28,31 @@
             <textarea id="product-description" placeholder="Deskripsi produk"></textarea>
             <button onclick="addProduct()">Tambah Produk</button>
         </div>
+
+        <div id="edit-form" class="form-section">
+            <h2 id="edit-product-title">Edit Produk</h2>
+            <input type="text" id="edit-name" placeholder="Nama Produk">
+            <input type="number" id="edit-stock" placeholder="Stok" min="0">
+            <input type="number" id="edit-price" placeholder="Harga" min="0">
+            <input type="text" id="edit-image" placeholder="URL Foto Produk">
+            <textarea id="edit-description" placeholder="Deskripsi produk"></textarea>
+            <button id="edit-save-btn" onclick="saveEditedProduct()">Simpan Perubahan</button>
+        </div>
+
         <a href="katalog.html" class="back-btn">Lihat Katalog</a>
     </div>
 
     <script src="app.js"></script>
     <script>
-        // Logika spesifik untuk halaman input
         document.addEventListener('DOMContentLoaded', () => {
-            // Kita tidak perlu memuat produk di halaman ini, jadi kita kosongkan
+            const urlParams = new URLSearchParams(window.location.search);
+            const editIndex = urlParams.get('editIndex');
+            if (editIndex !== null) {
+                document.getElementById('add-form').style.display = 'none';
+                showEditForm(parseInt(editIndex));
+            } else {
+                document.getElementById('edit-form').style.display = 'none';
+            }
         });
     </script>
 </body>
