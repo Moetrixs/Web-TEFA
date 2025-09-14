@@ -58,12 +58,11 @@ function deleteProduct(index) {
         return;
     }
     
-    // Perbaikan utama: Dapatkan data terbaru sebelum dihapus
     products = getProducts();
     products.splice(index, 1);
     
     saveProducts(products);
-    drawProducts(); // Gambar ulang kanvas dengan data yang sudah diperbarui
+    drawProducts();
 }
 
 // Fungsi untuk menampilkan formulir edit produk
@@ -227,7 +226,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const mouseX = (event.clientX - rect.left) * scaleX;
         const mouseY = (event.clientY - rect.top) * scaleY;
 
-        products = getProducts(); // Memuat data terbaru sebelum memproses klik
+        products = getProducts();
 
         products.forEach((product, index) => {
             // Logika untuk mendeteksi klik pada tombol hapus
@@ -245,6 +244,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             
             // Logika untuk mendeteksi klik pada kartu produk
+            // Perbaikan utama: Tambahkan logika klik untuk gambar
             if (mouseX >= product.x && mouseX <= product.x + product.width &&
                 mouseY >= product.y && mouseY <= product.y + product.height) {
                 window.location.href = `deskripsi.html?index=${index}`;
