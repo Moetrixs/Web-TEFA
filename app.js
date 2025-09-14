@@ -5,21 +5,23 @@ let products = [];
 function addProduct() {
     const nameInput = document.getElementById('product-name');
     const stockInput = document.getElementById('product-stock');
+    const priceInput = document.getElementById('product-price');
     const descInput = document.getElementById('product-description');
     const imageInput = document.getElementById('product-image');
     
     const name = nameInput.value.trim();
     const stock = parseInt(stockInput.value);
+    const price = parseInt(priceInput.value);
     const description = descInput.value.trim();
     const image = imageInput.value.trim();
 
-    if (name === '' || isNaN(stock) || stock < 0 || description === '' || image === '') {
-        alert('Mohon masukkan semua data produk dengan valid, termasuk URL gambar.');
+    if (name === '' || isNaN(stock) || stock < 0 || isNaN(price) || price < 0 || description === '' || image === '') {
+        alert('Mohon masukkan semua data produk dengan valid, termasuk harga dan URL gambar.');
         return;
     }
     
     products = getProducts();
-    const newProduct = { name, stock, description, image };
+    const newProduct = { name, stock, price, description, image };
     products.push(newProduct);
     
     saveProducts(products);
@@ -27,6 +29,7 @@ function addProduct() {
     // Bersihkan input
     nameInput.value = '';
     stockInput.value = '';
+    priceInput.value = '';
     descInput.value = '';
     imageInput.value = '';
     
@@ -77,7 +80,7 @@ function showProductDetail(index) {
 // Fungsi untuk menggambar produk di canvas (hanya di halaman katalog)
 function drawProducts() {
     const canvas = document.getElementById('product-canvas');
-    if (!canvas) return; // Keluar jika elemen canvas tidak ada di halaman ini
+    if (!canvas) return;
 
     const ctx = canvas.getContext('2d');
     products = getProducts();
@@ -142,7 +145,7 @@ function drawProducts() {
             
             ctx.font = '16px Arial';
             ctx.fillStyle = '#555';
-            ctx.fillText(`Stok: ${product.stock}`, x + cardWidth / 2, y + 245);
+            ctx.fillText(`Stok: ${product.stock} | Rp. ${product.price}`, x + cardWidth / 2, y + 245);
         };
         img.src = product.image;
     });
@@ -162,7 +165,7 @@ function saveProducts(products) {
 // Event listener untuk mendeteksi klik pada canvas (hanya di halaman katalog)
 document.addEventListener('DOMContentLoaded', () => {
     const canvas = document.getElementById('product-canvas');
-    if (!canvas) return; // Keluar jika elemen canvas tidak ada di halaman ini
+    if (!canvas) return;
 
     canvas.addEventListener('click', (event) => {
         const rect = canvas.getBoundingClientRect();
@@ -173,25 +176,20 @@ document.addEventListener('DOMContentLoaded', () => {
         const mouseY = (event.clientY - rect.top) * scaleY;
 
         products.forEach((product, index) => {
-            // Periksa apakah klik berada di tombol edit
             if (mouseX >= product.editBtn.x && mouseX <= product.editBtn.x + product.editBtn.size &&
                 mouseY >= product.editBtn.y && mouseY <= product.editBtn.y + product.editBtn.size) {
-                // Navigasi ke halaman input.html dengan parameter indeks
                 window.location.href = `input.html?editIndex=${index}`;
                 return;
             }
 
-            // Periksa apakah klik berada di tombol hapus
             if (mouseX >= product.deleteBtn.x && mouseX <= product.deleteBtn.x + product.deleteBtn.size &&
                 mouseY >= product.deleteBtn.y && mouseY <= product.deleteBtn.y + product.deleteBtn.size) {
                 deleteProduct(index);
                 return;
             }
             
-            // Jika tidak, periksa apakah klik berada di kartu produk
             if (mouseX >= product.x && mouseX <= product.x + product.width &&
                 mouseY >= product.y && mouseY <= product.y + product.height) {
-                // Navigasi ke halaman deskripsi.html dengan parameter indeks
                 window.location.href = `deskripsi.html?index=${index}`;
             }
         });
