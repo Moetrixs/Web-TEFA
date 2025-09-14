@@ -58,11 +58,12 @@ function deleteProduct(index) {
         return;
     }
     
+    // Perbaikan utama: Dapatkan data terbaru sebelum dihapus
     products = getProducts();
     products.splice(index, 1);
     
     saveProducts(products);
-    drawProducts();
+    drawProducts(); // Gambar ulang kanvas dengan data yang sudah diperbarui
 }
 
 // Fungsi untuk menampilkan formulir edit produk
@@ -226,8 +227,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const mouseX = (event.clientX - rect.left) * scaleX;
         const mouseY = (event.clientY - rect.top) * scaleY;
 
-        const products = getProducts(); // Muat ulang data produk di sini
-        
+        products = getProducts(); // Memuat data terbaru sebelum memproses klik
+
         products.forEach((product, index) => {
             // Logika untuk mendeteksi klik pada tombol hapus
             if (mouseX >= product.deleteBtn.x && mouseX <= product.deleteBtn.x + product.deleteBtn.size &&
